@@ -8,8 +8,8 @@ jsconfig.json
 # NodeJS
 npm-debug.log
 node_modules
-lib-rn
-lib
+# lib-rn
+# lib
 yarn-error.log
 
 # OS X
