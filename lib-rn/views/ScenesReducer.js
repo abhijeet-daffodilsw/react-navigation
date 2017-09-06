@@ -1,5 +1,5 @@
-import invariant from '../utils/invariant';
-import shallowEqual from '../utils/shallowEqual';
+import invariant from 'fbjs/lib/invariant';
+import shallowEqual from 'fbjs/lib/shallowEqual';
 
 const SCENE_KEY_PREFIX = 'scene_';
 
@@ -63,6 +63,7 @@ export default function ScenesReducer(scenes, nextState, prevState) {
   const staleScenes = new Map();
 
   // Populate stale scenes from previous scenes marked as stale.
+
   scenes.forEach(scene => {
     const { key } = scene;
     if (scene.isStale) {
@@ -81,7 +82,7 @@ export default function ScenesReducer(scenes, nextState, prevState) {
       key,
       route
     };
-    invariant(!nextKeys.has(key), `navigation.state.routes[${index}].key "${key}" conflicts with ` + 'another route!');
+    invariant(!nextKeys.has(key), `navigationState.routes[${index}].key "${key}" conflicts with ` + 'another route!');
     nextKeys.add(key);
 
     if (staleScenes.has(key)) {
@@ -123,7 +124,20 @@ export default function ScenesReducer(scenes, nextState, prevState) {
     }
   };
 
-  staleScenes.forEach(mergeScene);
+  // work around for flashing scenes
+  let k = null;
+  let v = null;
+  staleScenes.forEach(scene => {
+    let { key } = scene;
+    k = key;
+    v = scene;
+  });
+
+  newStaleScenes = k && v ? new Map([[k, v]]) : new Map();
+  newStaleScenes.forEach(mergeScene);
+  // staleScenes.forEach(mergeScene);
+  // work around end
+
   freshScenes.forEach(mergeScene);
 
   nextScenes.sort(compareScenes);
